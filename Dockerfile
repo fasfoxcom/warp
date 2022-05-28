@@ -11,7 +11,7 @@ RUN \
     NODE_URL="https://nodejs.org/dist/v${NODE_VER}/node-v${NODE_VER}-linux-${NODE_ARCH}.tar.gz" && \
     wget -O - "$NODE_URL" | tar -xz --strip-components=1 -C /usr/
 
-RUN apt-get install -y build-essential libpq-dev libpcre3 libpcre3-dev
+RUN apt-get install -y build-essential libpq-dev libpcre3 libpcre3-dev media-types
 RUN pip install --upgrade setuptools && pip install wheel uwsgi
 RUN pip wheel -w wheel/ uwsgi
 
@@ -50,6 +50,8 @@ RUN \
 #RUN pip install --no-index wheel/*.whl
 
 COPY --from=compile-image /opt/warp/warp/static ./static
+# Needed to properly serve statics
+COPY --from=compile-image /etc/mime.types /etc/
 COPY res/warp_uwsgi.ini .
 
 EXPOSE 8000/tcp
